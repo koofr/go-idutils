@@ -97,3 +97,27 @@ func (g *Generator) tilNextMillis(lastTimestamp int64) int64 {
 
 	return timestamp
 }
+
+func IdToTimestamp(id int64) int64 {
+	return (id >> TimestampLeftShift) + CustomEpoch
+}
+
+func IdToTime(id int64) time.Time {
+	return time.Unix(0, IdToTimestamp(id)*1000000).UTC()
+}
+
+func IdEndOfTimestamp(timestamp int64) int64 {
+	return (timestamp-CustomEpoch)<<TimestampLeftShift | ((1 << TimestampLeftShift) - 1)
+}
+
+func IdEndOfTime(t time.Time) int64 {
+	return IdEndOfTimestamp(t.UnixNano() / 1000000)
+}
+
+func IdStartOfTimestamp(timestamp int64) int64 {
+	return (timestamp - CustomEpoch) << TimestampLeftShift
+}
+
+func IdStartOfTime(t time.Time) int64 {
+	return IdStartOfTimestamp(t.UnixNano() / 1000000)
+}
