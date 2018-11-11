@@ -23,6 +23,9 @@ const (
 	SequenceMask       = -1 ^ (-1 << 12) // -1 ^ (-1 << sequenceBits)
 )
 
+type TimeId = int64
+type Timestamp = int64
+
 func timeGen() int64 {
 	return time.Now().UnixNano() / 1000000
 }
@@ -31,8 +34,8 @@ type Generator struct {
 	WorkerId      int64
 	DatacenterId  int64
 	sequence      int64
-	lastTimestamp int64
-	timeGen       func() int64
+	lastTimestamp Timestamp
+	timeGen       func() Timestamp
 	mutex         sync.Mutex
 }
 
@@ -56,14 +59,14 @@ func NewGenerator(workerId int64, datacenterId int64) (*Generator, error) {
 	return g, nil
 }
 
-func (g *Generator) buildId() int64 {
+func (g *Generator) buildId() TimeId {
 	return ((g.lastTimestamp - CustomEpoch) << TimestampLeftShift) |
 		(g.DatacenterId << DatacenterIdShift) |
 		(g.WorkerId << WorkerIdShift) |
 		g.sequence
 }
 
-func (g *Generator) NextId() (int64, error) {
+func (g *Generator) NextId() (TimeId, error) {
 	g.mutex.Lock()
 	defer g.mutex.Unlock()
 
@@ -88,7 +91,7 @@ func (g *Generator) NextId() (int64, error) {
 	return g.buildId(), nil
 }
 
-func (g *Generator) tilNextMillis(lastTimestamp int64) int64 {
+func (g *Generator) tilNextMillis(lastTimestamp Timestamp) Timestamp {
 	timestamp := g.timeGen()
 
 	for timestamp <= lastTimestamp {
@@ -98,26 +101,26 @@ func (g *Generator) tilNextMillis(lastTimestamp int64) int64 {
 	return timestamp
 }
 
-func IdToTimestamp(id int64) int64 {
+func IdToTimestamp(id TimeId) Timestamp {
 	return (id >> TimestampLeftShift) + CustomEpoch
 }
 
-func IdToTime(id int64) time.Time {
+func IdToTime(id TimeId) time.Time {
 	return time.Unix(0, IdToTimestamp(id)*1000000).UTC()
 }
 
-func IdEndOfTimestamp(timestamp int64) int64 {
+func IdEndOfTimestamp(timestamp Timestamp) TimeId {
 	return (timestamp-CustomEpoch)<<TimestampLeftShift | ((1 << TimestampLeftShift) - 1)
 }
 
-func IdEndOfTime(t time.Time) int64 {
+func IdEndOfTime(t time.Time) TimeId {
 	return IdEndOfTimestamp(t.UnixNano() / 1000000)
 }
 
-func IdStartOfTimestamp(timestamp int64) int64 {
+func IdStartOfTimestamp(timestamp Timestamp) TimeId {
 	return (timestamp - CustomEpoch) << TimestampLeftShift
 }
 
-func IdStartOfTime(t time.Time) int64 {
+func IdStartOfTime(t time.Time) TimeId {
 	return IdStartOfTimestamp(t.UnixNano() / 1000000)
 }
