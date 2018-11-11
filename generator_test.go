@@ -195,6 +195,20 @@ var _ = Describe("Generator", func() {
 			Expect(newT).To(Equal(t))
 		})
 	})
+
+	Describe("IdAddDuration", func() {
+		It("should add a time Duration to the id", func() {
+			id := int64(1061361893655969792)
+			t := IdToTime(id)
+			d := 1 * time.Hour
+
+			newId := IdAddDuration(id, d)
+			Expect(newId).To(Equal(int64(1061376993150369792)))
+
+			newT := IdToTime(newId)
+			Expect(newT).To(Equal(t.Add(d)))
+		})
+	})
 })
 
 func BenchmarkNextId(b *testing.B) {

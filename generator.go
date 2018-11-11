@@ -124,3 +124,8 @@ func IdStartOfTimestamp(timestamp Timestamp) TimeId {
 func IdStartOfTime(t time.Time) TimeId {
 	return IdStartOfTimestamp(t.UnixNano() / 1000000)
 }
+
+func IdAddDuration(id TimeId, d time.Duration) TimeId {
+	millis := Timestamp(d / 1000000)
+	return id + (millis << TimestampLeftShift)
+}
