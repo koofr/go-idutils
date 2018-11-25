@@ -23,6 +23,10 @@ const (
 	SequenceMask       = -1 ^ (-1 << 12) // -1 ^ (-1 << sequenceBits)
 )
 
+var (
+	CustomEpochTime = time.Unix(0, CustomEpoch*1000000)
+)
+
 type TimeId = int64
 type Timestamp = int64
 
