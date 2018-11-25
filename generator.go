@@ -114,6 +114,9 @@ func IdToTime(id TimeId) time.Time {
 }
 
 func IdEndOfTimestamp(timestamp Timestamp) TimeId {
+	if timestamp < CustomEpoch {
+		panic("idutils.IdEndOfTimestamp timestamp must be greater than CustomEpoch")
+	}
 	return (timestamp-CustomEpoch)<<TimestampLeftShift | ((1 << TimestampLeftShift) - 1)
 }
 
@@ -122,6 +125,9 @@ func IdEndOfTime(t time.Time) TimeId {
 }
 
 func IdStartOfTimestamp(timestamp Timestamp) TimeId {
+	if timestamp < CustomEpoch {
+		panic("idutils.IdEndOfTimestamp timestamp must be greater than CustomEpoch")
+	}
 	return (timestamp - CustomEpoch) << TimestampLeftShift
 }
 
