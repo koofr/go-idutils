@@ -7,9 +7,12 @@ Go ID utils.
 
 ## Install
 
-    go get github.com/koofr/go-idutils
+```sh
+go get github.com/koofr/go-idutils
+```
 
 ## Testing
 
-    go get -t
-    go test
+```sh
+go test
+```
